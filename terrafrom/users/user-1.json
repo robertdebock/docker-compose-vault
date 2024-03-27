@@ -1,0 +1,4 @@
+{
+  "policies": ["default", "robert"],
+  "password": "changeme"
+}
