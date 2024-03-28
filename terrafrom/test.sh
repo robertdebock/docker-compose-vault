@@ -5,44 +5,44 @@ unset VAULT_TOKEN
 pass() {
   $@ > /dev/null 2>&1
   if [ $? != 0 ] ; then
-    echo "FAIL"
+    echo "BAAD, failed: $@"
   else
-    echo "PASS"
+    echo "GOOD, passed: $@"
   fi
 }
 
 fail() {
-  ! $@ > /dev/null 2>&1
+  $@ > /dev/null 2>&1
   if [ $? != 0 ] ; then
-    echo "FAIL"
+    echo "GOOD, failed: $@"
   else
-    echo "PASS"
+    echo "BAAD, passed $@"
   fi
 }
 
-# Test if user-1 can login.
-pass vault login -method=userpass username=user-1 password=changeme
+# default should be able to login
+pass vault login -method=userpass username=default password=changeme
 
-# Test if user-1 can list secrets.
+# default sould not be able to list
+fail vault secrets list
+
+# default should not be able to read this secret.
+fail vault kv get customer_1/some_secret
+
+# default should not be able to read this secret.
+fail vault kv get customer_2/some_secret
+
+# user should be able to login
+pass vault login -method=userpass username=user password=changeme
+
+# user should be able to list
 pass vault secrets list
 
-# Test if user-1 can read roberts AWS secrets.
-pass vault kv get robert/aws
+# user should be able to read this seret.
+pass vault kv get customer_1/some_secret
 
-# Test if user-1 can't read adfinis AWS secrets.
-fail vault kv get adfinis/aws
+# user should be not able to read this seret
+fail vault kv get customer_2/some_secret
 
-# Test if user-2 can login.
-pass vault login -method=userpass username=user-2 password=changeme
-
-# Test if user-2 can list secrets.
-pass vault secrets list
-
-# Test if user-2 can read adfinis AWS secrets.
-pass vault kv get adfinis/aws
-
-# Test if user-2 can't read robert AWS secrets.
-fail vault kv get robert/aws
-
-# Test if user-3 can login.
-pass vault login -method=userpass username=user-3 password=changeme
+# admin should be able to login
+pass vault login -method=userpass username=admin password=changeme

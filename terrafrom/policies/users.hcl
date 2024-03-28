@@ -2,10 +2,10 @@ path "sys/*" {
   capabilities = ["list", "read"]
 }
 
-path "robert/*" {
+path "customer_1/*" {
     capabilities = ["list"]
 }
 
-path "robert/data/*" {
+path "customer_1/data/*" {
   capabilities = ["read", "create", "update", "delete", "list"]
 }
