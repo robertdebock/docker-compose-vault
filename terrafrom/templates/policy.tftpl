@@ -1,0 +1,6 @@
+%{ for item in paths ~}
+path "${item.path}" {
+  capabilities = ${jsonencode(item.capabilities)}
+}
+
+%{ endfor ~}

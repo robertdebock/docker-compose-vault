@@ -1,7 +1,9 @@
 version: '3'
 services:
     vault:
-      image: hashicorp/vault:latest
+      environment:
+          VAULT_LICENSE: $VAULT_LICENSE
+      image: hashicorp/vault-enterprise:latest
       volumes:
         - ./config:/vault/config
         - ./data:/vault/file
