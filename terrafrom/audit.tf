@@ -1,3 +1,4 @@
+# Create an audit device.
 resource "vault_audit" "file" {
   type = "file"
   options = {

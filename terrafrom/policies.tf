@@ -1,3 +1,4 @@
+# Define policies, each has a name and paths. Each item of paths has a path and capabilities.
 variable "policies" {
   type = list(object({
     name  = string
@@ -11,16 +12,12 @@ variable "policies" {
       name = "am-uat-reader"
       paths = [
         {
-          path         = "amuat/sys/*"
+          path         = "amuat/*"
           capabilities = ["list", "read"]
         },
         {
-          path         = "amuat/*"
-          capabilities = ["list"]
-        },
-        {
           path         = "amuat/data/*"
-          capabilities = ["read", "create", "update", "delete", "list"]
+          capabilities = ["read", "list"]
         }
       ]
     },
@@ -29,11 +26,7 @@ variable "policies" {
       paths = [
         {
           path         = "amuat/*"
-          capabilities = ["list", "read"]
-        },
-        {
-          path         = "amuat/*"
-          capabilities = ["list"]
+          capabilities = ["list", "read", "update"]
         },
         {
           path         = "amuat/data/*"
@@ -160,6 +153,7 @@ variable "policies" {
   ]
 }
 
+# Create the policies.
 resource "vault_policy" "default" {
   count  = length(var.policies)
   name   = var.policies[count.index].name

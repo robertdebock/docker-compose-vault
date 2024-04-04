@@ -1,7 +1,9 @@
+# Mount the "userpass" authentication engine.
 resource "vault_auth_backend" "default" {
   type = "userpass"
 }
 
+# Define users, with a policy and password.
 variable "users" {
   type = list(object({
     name     = string
@@ -42,6 +44,7 @@ variable "users" {
   ]
 }
 
+# Create the defined users.
 resource "vault_generic_endpoint" "default" {
   count                = length(var.users)
   path                 = "auth/${vault_auth_backend.default.path}/users/${var.users[count.index].name}"
