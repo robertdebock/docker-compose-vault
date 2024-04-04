@@ -30,40 +30,104 @@ fail() {
   fi
 }
 
-for user in am-uat-reader am-uat-editor am-uat-admin ; do
-  # user should be able to login
-  pass vault login -method=userpass username=${user} password=changeme
+echo "Testing amuat."
+for namespace in amuat ; do
+  for user in am-uat-reader am-uat-editor am-uat-admin ; do
+    # user should be able to login
+    pass vault login -method=userpass username=${user} password=changeme
 
-  # user should be able too lookup it's own token
-  pass vault token lookup
+    # user should be able too lookup it's own token
+    pass vault token lookup
 
-  # user should be able to list
-  pass vault secrets list -namespace amuat
+    # user should be able to list
+    pass vault secrets list -namespace ${namespace}
+  done
 done
 
-for user in am-uat-reader ; do
-  # user should be able to login
-  pass vault login -method=userpass username=${user} password=changeme
+for namespace in amuat ; do
+  for user in am-uat-reader ; do
+    # user should be able to login
+    pass vault login -method=userpass username=${user} password=changeme
 
-  # user be able to read this secret.
-  pass vault kv get -namespace=amuat -mount="one" "my_secret"
+    # user should be able to read this secret.
+    pass vault kv get -namespace=${namespace} -mount="one" "my_secret"
 
-  # user should not be able to write a secret
-  fail vault kv put -namespace=amuat -mount="one" my_secret username=some_username_2 password=some_password_2
+    # user should not be able to write a secret
+    fail vault kv put -namespace=${namespace} -mount="one" my_secret username=some_username_2 password=some_password_2
+  done
 done
 
-for user in am-uat-editor ; do
-  # user should be able to login
-  pass vault login -method=userpass username=${user} password=changeme
+for namespace in amuat ; do
+  for user in am-uat-editor ; do
+    # user should be able to login
+    pass vault login -method=userpass username=${user} password=changeme
 
-  # user be able to read this secret.
-  pass vault kv get -namespace=amuat -mount="one" "my_secret"
+    # user should be able to read this secret.
+    pass vault kv get -namespace=${namespace} -mount="one" "my_secret"
 
-  # user should be able to write a secret
-  pass vault kv put -namespace=amuat -mount="one" my_secret username=some_username_2 password=some_password_2
+    # user should be able to write a secret
+    pass vault kv put -namespace=${namespace} -mount="one" my_secret username=some_username_2 password=some_password_2
+  done
 done
 
 for user in am-uat-admin ; do
   # user should be able to login
   pass vault login -method=userpass username=${user} password=changeme
+
+  # user should not be able to read this secret.
+  fail vault kv get -namespace=${namespace} -mount="one" "my_secret"
+
+  # user should not be able to write a secret
+  fail vault kv put -namespace=${namespace} -mount="one" my_secret username=some_username_2 password=some_password_2
+done
+
+echo "Testing amprod."
+for namespace in amprod ; do
+  for user in am-uat-reader am-uat-editor am-uat-admin ; do
+    # user should be able to login
+    pass vault login -method=userpass username=${user} password=changeme
+
+    # user should be able too lookup it's own token
+    pass vault token lookup
+
+    # user should not be able to list
+    fail vault secrets list -namespace ${namespace}
+  done
+done
+
+for namespace in amprod ; do
+  for user in am-uat-reader ; do
+    # user should be able to login
+    pass vault login -method=userpass username=${user} password=changeme
+
+    # user should be able to read this secret.
+    fail vault kv get -namespace=${namespace} -mount="one" "my_secret"
+
+    # user should not be able to write a secret
+    fail vault kv put -namespace=${namespace} -mount="one" my_secret username=some_username_2 password=some_password_2
+  done
+done
+
+for namespace in amprod ; do
+  for user in am-uat-editor ; do
+    # user should be able to login
+    pass vault login -method=userpass username=${user} password=changeme
+
+    # user should not be able to read this secret.
+    fail vault kv get -namespace=${namespace} -mount="one" "my_secret"
+
+    # user should not be able to write a secret
+    fail vault kv put -namespace=${namespace} -mount="one" my_secret username=some_username_2 password=some_password_2
+  done
+done
+
+for user in am-uat-admin ; do
+  # user should be able to login
+  pass vault login -method=userpass username=${user} password=changeme
+
+  # user should not be able to read this secret.
+  fail vault kv get -namespace=${namespace} -mount="one" "my_secret"
+
+  # user should not be able to write a secret
+  fail vault kv put -namespace=${namespace} -mount="one" my_secret username=some_username_2 password=some_password_2
 done
