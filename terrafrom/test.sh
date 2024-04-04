@@ -41,6 +41,10 @@ for namespace in amuat ; do
 
     # user should be able to list
     pass vault secrets list -namespace ${namespace}
+
+    # user should not be able too lookup it's own token when logged out
+    rm ~/.vault-token
+    fail vault token lookup
   done
 done
 
@@ -92,6 +96,11 @@ for namespace in amprod ; do
 
     # user should not be able to list
     fail vault secrets list -namespace ${namespace}
+
+    # user should not be able too lookup it's own token when logged out
+    rm ~/.vault-token
+    fail vault token lookup
+
   done
 done
 
