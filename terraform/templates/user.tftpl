@@ -1,0 +1,4 @@
+${jsonencode({
+  "policies": [for policy in policies : "${policy}"],
+  "password": "${password}"
+})}
