@@ -127,11 +127,11 @@ policies = [
   {
     name = "am-prod-reader"
     paths = [
-      # Is the below required?
-      {
-        path         = "amprod/sys/*"
-        capabilities = ["read", "list"]
-      },
+      # # Is the below required?
+      # {
+      #   path         = "amprod/sys/*"
+      #   capabilities = ["read", "list"]
+      # },
       {
         path         = "amprod/*"
         capabilities = ["read", "list"]
@@ -145,10 +145,10 @@ policies = [
   {
     name = "am-prod-editor"
     paths = [
-      {
-        path         = "amprod/sys/*"
-        capabilities = ["read", "list"]
-      },
+      # {
+      #   path         = "amprod/sys/*"
+      #   capabilities = ["read", "list"]
+      # },
       {
         path         = "amprod/*"
         capabilities = ["read", "list"]
