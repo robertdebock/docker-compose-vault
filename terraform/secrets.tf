@@ -1,10 +1,10 @@
 # Create a secrets engine "one" in each namespace.
 resource "vault_mount" "one" {
-  count       = length(var.namespaces)
-  path        = "one"
-  type        = "kv-v2"
-  namespace   = vault_namespace.default[count.index].path
-  options     = {
+  count     = length(var.namespaces)
+  path      = "one"
+  type      = "kv-v2"
+  namespace = vault_namespace.default[count.index].path
+  options = {
     version = "2"
   }
   description = "KV Secrets engine 1."
@@ -20,11 +20,11 @@ resource "vault_generic_secret" "one" {
 
 # Create a secrets engine "two" in each namespace.
 resource "vault_mount" "two" {
-  count       = length(var.namespaces)
-  path        = "two"
-  type        = "kv-v2"
-  namespace   = vault_namespace.default[count.index].path
-  options     = {
+  count     = length(var.namespaces)
+  path      = "two"
+  type      = "kv-v2"
+  namespace = vault_namespace.default[count.index].path
+  options = {
     version = "2"
   }
   description = "KV Secrets engine 2."
