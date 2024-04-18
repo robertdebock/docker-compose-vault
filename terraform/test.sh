@@ -30,9 +30,8 @@ fail() {
   fi
 }
 
-echo "Testing amuat."
 for namespace in amuat ; do
-  for user in am-uat-reader am-uat-editor am-uat-admin ; do
+  for user in am-uat-reader am-uat-editor am-uat-remover am-uat-admin ; do
     # user should be able to login
     pass vault login -method=userpass username=${user} password=changeme
 
@@ -43,12 +42,15 @@ for namespace in amuat ; do
     pass vault secrets list -namespace ${namespace}
 
     # user should not be able too lookup it's own token when logged out
-    rm ~/.vault-token
+    pass rm ~/.vault-token
     fail vault token lookup
-  done
-done
 
-for namespace in amuat ; do
+    # user should not be able too lookup it's own token
+    fail vault secrets list -namespace ${namespace}
+
+    # user should not be able to list
+    fail vault secrets list -namespace ${namespace}
+  done
   for user in am-uat-reader ; do
     # user should be able to login
     pass vault login -method=userpass username=${user} password=changeme
@@ -59,9 +61,6 @@ for namespace in amuat ; do
     # user should not be able to write a secret
     fail vault kv put -namespace=${namespace} -mount="one" my_secret username=some_username_2 password=some_password_2
   done
-done
-
-for namespace in amuat ; do
   for user in am-uat-editor ; do
     # user should be able to login
     pass vault login -method=userpass username=${user} password=changeme
@@ -71,63 +70,24 @@ for namespace in amuat ; do
 
     # user should be able to write a secret
     pass vault kv put -namespace=${namespace} -mount="one" my_secret username=some_username_2 password=some_password_2
+
+    # user should not be able to delete a secret
+    fail vault kv delete -namespace=${namespace} -mount="one" my_secret
   done
-done
-
-for user in am-uat-admin ; do
-  # user should be able to login
-  pass vault login -method=userpass username=${user} password=changeme
-
-  # user should not be able to read this secret.
-  fail vault kv get -namespace=${namespace} -mount="one" "my_secret"
-
-  # user should not be able to write a secret
-  fail vault kv put -namespace=${namespace} -mount="one" my_secret username=some_username_2 password=some_password_2
-done
-
-echo "Testing amprod."
-for namespace in amprod ; do
-  for user in am-uat-reader am-uat-editor am-uat-admin ; do
-    # user should be able to login
-    pass vault login -method=userpass username=${user} password=changeme
-
-    # user should be able too lookup it's own token
-    pass vault token lookup
-
-    # user should not be able to list
-    fail vault secrets list -namespace ${namespace}
-
-    # user should not be able too lookup it's own token when logged out
-    rm ~/.vault-token
-    fail vault token lookup
-
-  done
-done
-
-for namespace in amprod ; do
-  for user in am-uat-reader ; do
+  for user in am-uat-remover ; do
     # user should be able to login
     pass vault login -method=userpass username=${user} password=changeme
 
     # user should be able to read this secret.
-    fail vault kv get -namespace=${namespace} -mount="one" "my_secret"
+    pass vault kv get -namespace=${namespace} -mount="one" "my_secret"
 
-    # user should not be able to write a secret
-    fail vault kv put -namespace=${namespace} -mount="one" my_secret username=some_username_2 password=some_password_2
+    # user should be able to delete a secret
+    pass vault kv delete -namespace=${namespace} -mount="one" my_secret
   done
-done
-
-for namespace in amprod ; do
-  for user in am-uat-editor ; do
-    # user should be able to login
-    pass vault login -method=userpass username=${user} password=changeme
-
-    # user should not be able to read this secret.
-    fail vault kv get -namespace=${namespace} -mount="one" "my_secret"
-
-    # user should not be able to write a secret
-    fail vault kv put -namespace=${namespace} -mount="one" my_secret username=some_username_2 password=some_password_2
-  done
+  
+   # Recreate the deleted secret
+   pass vault login -method=userpass username=am-uat-editor password=changeme
+   pass vault kv put -namespace=${namespace} -mount="one" my_secret username=some_username_3 password=some_password_3
 done
 
 for user in am-uat-admin ; do
